@@ -1,11 +1,10 @@
 import Router from 'koa-router';
 import Redis from 'koa-redis';
-import nodeMailer from 'nodemailer';
+import nodeMailer from 'nodemailer'
 import User from '../dbs/models/users';
 import Passport from './utils/passport';
 import Email from '../dbs/config';
 import axios from './utils/axios';
-import { request } from 'https';
 
 let router = new Router({
   prefix: '/users'
@@ -25,7 +24,7 @@ router.post('/signup', async (ctx) => {
     const saveCode = await Store.hget(`nodemail:${username}`, 'code')
     const saveExpire = await Store.hget(`nodemail:${username}`, 'expire')
     if (code === saveCode) {
-      if (new Date().getTime - saveExpire > 0) {
+      if (new Date().getTime() - saveExpire > 0) {
         ctx.body = {
           code: -1,
           msg: '验证码已过期，请重新尝试'
@@ -111,8 +110,7 @@ router.post('/signin', async (ctx, next) => {
   })(ctx, next)
 })
 
-
-router.post('verify', async (ctx, next) => {
+router.post('/verify', async (ctx, next) => {
   let username = ctx.request.body.username
   const saveExpire = await Store.hget(`nodemail${username}`, 'expire')
   if (saveExpire && new Date().getTime() - saveExpire < 0) {
